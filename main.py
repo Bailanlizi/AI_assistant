@@ -80,7 +80,7 @@ def chat_loop():
             continue
         
         # 检查退出命令
-        if user_input.lower() in ['退出', 'exit', 'quit', 'bye']:
+        if user_input.lower() in ['退出', '再见','拜拜','exit', 'quit', 'bye']:
             print("👋 再见！")
             break
         
