@@ -64,25 +64,42 @@ chain_with_memory = RunnableWithMessageHistory(
 
 )
 
-response = chain_with_memory.invoke(
-    {"input": "我喜欢听音乐"},
-    config={"configurable": {"session_id": "user123"}},# ← 关键！
-)
+# 多轮对话基础版
+def chat_loop():
+    """简单的多轮对话循环"""
+    session_id = "user123"  # 固定会话ID
+    print("🤖 AI助手已启动！输入 '退出' 结束对话")
+    print("=" * 40)
+    
+    while True:
+        # 获取用户输入
+        user_input = input("\n👤 你: ").strip()
+        
+        if not user_input:
+            print("⚠️ 请输入内容")
+            continue
+        
+        # 检查退出命令
+        if user_input.lower() in ['退出', 'exit', 'quit', 'bye']:
+            print("👋 再见！")
+            break
+        
+        try:
+            # 调用AI
+            print("🤔 AI思考中...", end="", flush=True)
+            response = chain_with_memory.invoke(
+                {"input": user_input},
+                config={"configurable": {"session_id": session_id}},
+                timeout=30
+            )
+            
+            # 显示AI回复
+            print("\r" + " " * 20, end="\r")  # 清空"思考中"
+            print(f"🤖 AI: {response}")
+            
+        except Exception as e:
+            print(f"\r❌ 出错了: {e}")
 
-print(response)
-
-# import asyncio
-# from langchain_core.runnables import RunnableConfig
-
-# # 方法1：同步调用带超时
-# try:
-#     response = chain_with_memory.invoke(
-#         {"input": "我叫白蓝李子"},
-#         config={"configurable": {"session_id": "user123"}},
-#         timeout=30  # 30秒超时
-#     )
-#     print("响应:", response)
-# except asyncio.TimeoutError:
-#     print("⚠️ 请求超时！可能是网络或API问题")
-# except Exception as e:
-#     print(f"❌ 其他错误: {e}")
+# 运行
+if __name__ == "__main__":
+    chat_loop()
