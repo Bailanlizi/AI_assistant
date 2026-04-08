@@ -41,7 +41,11 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 
 # 原始链
-agent_chain = prompt | llm | StrOutputParser()
+agent_chain = (
+    RunnableSequence(prompt,llm,StrOutputParser()
+    )
+)
+# agent_chain = prompt | llm | StrOutputParser()
 
 
 # 带记忆的LCEL
@@ -61,8 +65,24 @@ chain_with_memory = RunnableWithMessageHistory(
 )
 
 response = chain_with_memory.invoke(
-    {"input": "我叫什么名字你知道吗"},
-    config={"configurable": {"session_id": "user123"}}  # ← 关键！
+    {"input": "我喜欢听音乐"},
+    config={"configurable": {"session_id": "user123"}},# ← 关键！
 )
 
-response
+print(response)
+
+# import asyncio
+# from langchain_core.runnables import RunnableConfig
+
+# # 方法1：同步调用带超时
+# try:
+#     response = chain_with_memory.invoke(
+#         {"input": "我叫白蓝李子"},
+#         config={"configurable": {"session_id": "user123"}},
+#         timeout=30  # 30秒超时
+#     )
+#     print("响应:", response)
+# except asyncio.TimeoutError:
+#     print("⚠️ 请求超时！可能是网络或API问题")
+# except Exception as e:
+#     print(f"❌ 其他错误: {e}")
